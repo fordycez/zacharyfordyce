@@ -61,10 +61,11 @@ async function loadUserFiles() {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => downloadFile(f.name, session.user.id))
-    fileList.appendChild(li)
-  })
-}
+    li.addEventListener('click', () => await supabase.storage.from('secure').download(`user_${userId}/${fileName}`))
+
+
+
+
 
 // Upload file
 document.getElementById('uploadBtn').addEventListener('click', async () => {
