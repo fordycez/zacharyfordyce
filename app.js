@@ -52,7 +52,7 @@ async function loadUserFiles() {
 
   // List files for this user
   const { data: files, error } = await supabase.storage
-    .from('user-files')
+    .from('secure')
     .list(`user_${session.user.id}`) // folder must match upload path
 
   //user_${session.user.id}/${fileName} - Something about this makes me wonder
@@ -93,7 +93,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 // 5️⃣ Download file
 async function downloadFile(fileName) {
   const { data, error } = await supabase.storage
-    .from('user-files')
+    .from('secure')
     .download(`user_${session.user.id}/${fileName}`)
 
   if (error) return alert(error.message)
