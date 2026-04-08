@@ -9,31 +9,28 @@
 <div style="width: 100%; height: 100%">
 <h1>Zachary Fordyce's Portfolio</h1>\
 <br/>
-<a href="./2026ZacharyFordyceResume.pdf">2026 Resume of Zachary Fordyce</a>
-    <!-- Email input required by app.js -->
-    <input
-      id="emailInput"
-      type="email"
-      placeholder="Enter your email"
-    />
+<body>
+  <h1>Supabase File Access Demo</h1>
 
-    <!-- Login button required by app.js -->
-    <button id="loginBtn">Send Magic Link</button>
+  <!-- Login -->
+  <input id="emailInput" type="email" placeholder="Your email">
+  <button id="loginBtn">Login / Sign Up</button>
+  <button id="logoutBtn" style="display:none;">Logout</button>
+  <p id="status"></p>
 
-    <!-- Logout button required by app.js -->
-    <button id="logoutBtn" style="display:none;">Log out</button>
+  <hr>
 
-    <!-- Status text required by app.js -->
-    <p id="status">Not logged in.</p>
+  <!-- File Section -->
+  <div id="fileSection" style="display:none;">
+    <input type="file" id="fileInput">
+    <button id="uploadBtn">Upload File</button>
 
-    <!-- Hidden section for the protected file -->
-    <section id="fileSection" style="display:none;">
-      <h2>Private File Contents</h2>
+    <h3>Your Files</h3>
+    <ul id="fileList"></ul>
+  </div>
 
-      <!-- File content area required by app.js -->
-      <pre id="fileContent">Loading...</pre>
-    </section>
-</div>
   <script type="module" src="app.js"></script>
+</body>
+</div>
 </body>
 </html>
