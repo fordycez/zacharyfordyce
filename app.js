@@ -64,7 +64,9 @@ async function loadUserFiles() {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => downloadFile(f.name, session.user.id))
+    //li.addEventListener('click', () => downloadFile(f.name, session.user.id))
+    // Hot fix
+    li.addEventListener('click', () => downloadFile(f.name, user_${session.user.id}))
     fileList.appendChild(li)
   })
 }
