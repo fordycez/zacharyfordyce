@@ -13,6 +13,9 @@ const fileSection = document.getElementById('fileSection')
 const fileInput = document.getElementById('fileInput')
 const fileList = document.getElementById('fileList')
 
+const file = fileInput.files[0]; // the local file the user selected
+const filePath = `user_${session.user.id}/${file.name}`;
+
 // 1️⃣ Login via magic link
 loginBtn.addEventListener('click', async () => {
   const email = emailInput.value.trim()
@@ -48,9 +51,9 @@ async function loadUserFiles() {
   fileSection.style.display = 'block'
 
   // List files for this user
-  const { data, error } = await supabase.storage
-    .from('secure') // bucket name must match dashboard
-    .list(`user_${session.user.id}`) // folder per user
+  const { data: files, error } = await supabase.storage
+    .from('user-files')
+    .list(`user_${session.user.id}`) // folder must match upload path
 
   //user_${session.user.id}/${fileName} - Something about this makes me wonder
 
@@ -75,7 +78,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
   if (!session) return alert('Not logged in.')
 
   const { error } = await supabase.storage
-    .from('user-files')
+    .from('secure')
     .upload(`user_${session.user.id}/${file.name}`, file, {
       metadata: { user_id: session.user.id }
     })
@@ -88,13 +91,14 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 })
 
 // 5️⃣ Download file
-async function downloadFile(fileName, userId) {
+async function downloadFile(fileName) {
   const { data, error } = await supabase.storage
-    .from('secure')
-    //.download(`user_${userId}/${fileName}`)
+    .from('user-files')
     .download(`user_${session.user.id}/${fileName}`)
 
-  if (error) return alert('Download failed: ' + error.message)
+  if (error) return alert(error.message)
+  const text = await data.text()
+  console.log('File content:', text)
 
   const url = URL.createObjectURL(data)
   const a = document.createElement('a')
