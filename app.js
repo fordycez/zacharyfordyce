@@ -90,7 +90,7 @@ async function downloadFile(fileName, userId) {
   const { data, error } = await supabase.storage
     .from('secure')
     //.download(`user_${userId}/${fileName}`)
-    .download(`user_${session.user.id}/job.txt`)
+    .download(`user_${session.user.id}/${fileName}`)
 
   if (error) return alert('Download failed: ' + error.message)
 
