@@ -56,14 +56,40 @@ async function loadUserFiles() {
     return
   }
 
-  fileList.innerHTML = ''
-  files.forEach(f => {
-    const li = document.createElement('li')
-    li.textContent = f.name
-    li.style.cursor = 'pointer'
-    li.addEventListener('click', () => await supabase.storage.from('secure').download(`user_${userId}/${fileName}`))
+	fileList.innerHTML = ''
 
+	files.forEach(f => {
+	  const li = document.createElement('li')
+	  li.textContent = f.name
+	  li.style.cursor = 'pointer'
 
+	  li.addEventListener('click', () => {
+		downloadFile(f.name, session.user.id)
+	  })
+
+	  fileList.appendChild(li)
+	})
+}
+
+li.addEventListener('click', async () => {
+  const { data, error } = await supabase.storage
+    .from('secure')
+    .download(`user_${userId}/${fileName}`)
+
+  if (error) {
+    alert('Download failed: ' + error.message)
+    return
+  }
+
+  const url = URL.createObjectURL(data)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+})
 
 
 
