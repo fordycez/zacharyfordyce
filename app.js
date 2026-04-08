@@ -54,8 +54,8 @@ async function loadUserAndFile() {
   fileSection.style.display = 'block'
 
   const { data, error } = await supabase.storage
-    .from('private-files')
-    .download('secret.txt')
+    .from('secure')
+    .download('job.txt')
 
   if (error) {
     fileContent.textContent = 'Could not load file: ' + error.message
