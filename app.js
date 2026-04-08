@@ -55,7 +55,7 @@ async function loadUserAndFile() {
 
   const { data, error } = await supabase.storage
     .from('secure')
-    .download('job.txt')
+    .download('vi/object/private-files/job.txt')
 
   if (error) {
     fileContent.textContent = 'Could not load file: ' + error.message
