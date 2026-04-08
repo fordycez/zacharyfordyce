@@ -49,8 +49,10 @@ async function loadUserFiles() {
 
   // List files for this user
   const { data, error } = await supabase.storage
-    .from('user-files') // bucket name must match dashboard
+    .from('secure') // bucket name must match dashboard
     .list(`user_${session.user.id}`) // folder per user
+
+  //user_${session.user.id}/${fileName} - Something about this makes me wonder
 
   if (error) return (fileList.innerHTML = 'Error loading files: ' + error.message)
 
