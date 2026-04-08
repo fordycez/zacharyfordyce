@@ -89,7 +89,8 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 async function downloadFile(fileName, userId) {
   const { data, error } = await supabase.storage
     .from('secure')
-    .download(`user_${userId}/${fileName}`)
+    //.download(`user_${userId}/${fileName}`)
+    .download(`user_${session.user.id}/job.txt`)
 
   if (error) return alert('Download failed: ' + error.message)
 
