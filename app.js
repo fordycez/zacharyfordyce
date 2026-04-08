@@ -53,7 +53,7 @@ async function loadUserFiles() {
   // List files for this user
   const { data: files, error } = await supabase.storage
     .from('secure')
-    .list(`user_${session.user.id}`) // folder must match upload path
+    .list(`user_${session.user.id}/${file.name}`) // folder must match upload path
 
   //user_${session.user.id}/${fileName} - Something about this makes me wonder
 
@@ -64,9 +64,7 @@ async function loadUserFiles() {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    //li.addEventListener('click', () => downloadFile(f.name, session.user.id))
-    // Hot fix
-    li.addEventListener('click', () => downloadFile(f.name, user_${session.user.id}))
+    li.addEventListener('click', () => downloadFile(f.name, session.user.id))
     fileList.appendChild(li)
   })
 }
