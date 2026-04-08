@@ -22,7 +22,8 @@ loginBtn.addEventListener('click', async () => {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.origin + window.location.pathname
+      //emailRedirectTo: window.location.origin + window.location.pathname\
+      emailRedirectTo: 'https://zacharyfordyce.com'
     }
   })
 
