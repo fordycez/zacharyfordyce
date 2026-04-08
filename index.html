@@ -9,6 +9,29 @@
 <div style="width: 100%; height: 100%">
 <h1>Zachary Fordyce's Portfolio</h1>
 <a href="./2026ZacharyFordyceResume.pdf">2026 Resume of Zachary Fordyce</a>
+    <!-- Email input required by app.js -->
+    <input
+      id="emailInput"
+      type="email"
+      placeholder="Enter your email"
+    />
+
+    <!-- Login button required by app.js -->
+    <button id="loginBtn">Send Magic Link</button>
+
+    <!-- Logout button required by app.js -->
+    <button id="logoutBtn" style="display:none;">Log out</button>
+
+    <!-- Status text required by app.js -->
+    <p id="status">Not logged in.</p>
+
+    <!-- Hidden section for the protected file -->
+    <section id="fileSection" style="display:none;">
+      <h2>Private File Contents</h2>
+
+      <!-- File content area required by app.js -->
+      <pre id="fileContent">Loading...</pre>
+    </section>
 </div>
   <script src="app.js"></script>
 </body>
