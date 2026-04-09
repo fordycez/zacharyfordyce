@@ -403,7 +403,7 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .createSignedUrl(fullPath, 60)
+            .createSignedUrl(`${folderPath}/${file.name}`, 60)
           
 
 
