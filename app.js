@@ -6,6 +6,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // DOM elements
 const emailInput = document.getElementById('emailInput')
+const passwordInput = document.getElementById('passwordInput')
 const loginBtn = document.getElementById('loginBtn')
 const logoutBtn = document.getElementById('logoutBtn')
 const status = document.getElementById('status')
@@ -13,70 +14,70 @@ const fileSection = document.getElementById('fileSection')
 const fileInput = document.getElementById('fileInput')
 const fileList = document.getElementById('fileList')
 
-const file = fileInput.file[0]; // the local file the user selected
-// const filePath = `user_${session.user.id}/${files.name}`;
-const filePath = 'user_${session.user.id}';
-
-// 1️⃣ Login via magic link
+// Login with email + password
 loginBtn.addEventListener('click', async () => {
   const email = emailInput.value.trim()
-  if (!email) return (status.textContent = 'Enter your email first.')
+  const password = passwordInput.value
 
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: window.location.href }
-  })
+  if (!email || !password) {
+    status.textContent = 'Enter both email and password.'
+    return
+  }
 
-  if (error) status.textContent = 'Login failed: ' + error.message
-  else status.textContent = 'Check your email for the login link.'
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    status.textContent = 'Login failed: ' + error.message
+  } else {
+    status.textContent = `Logged in as ${data.user.email}`
+    logoutBtn.style.display = 'inline-block'
+    fileSection.style.display = 'block'
+    loadUserFiles()
+  }
 })
 
-// 2️⃣ Logout
+// Logout
 logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut()
   location.reload()
 })
 
-// 3️⃣ Load user session and files
+// Load user files
 async function loadUserFiles() {
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) {
-    status.textContent = 'Not logged in.'
-    fileSection.style.display = 'none'
-    logoutBtn.style.display = 'none'
+  if (!session) return
+
+  const { data: files, error } = await supabase.storage
+    .from('secure') // <-- bucket name replaced
+    .list(`user_${session.user.id}`)
+
+  if (error) {
+    fileList.innerHTML = 'Error loading files: ' + error.message
     return
   }
 
-  status.textContent = `Logged in as ${session.user.email}`
-  logoutBtn.style.display = 'inline-block'
-  fileSection.style.display = 'block'
-
-  //user_${session.user.id}/${fileName} - Something about this makes me wonder
-
-  if (error) return (fileList.innerHTML = 'Error loading files: ' + error.message)
-
   fileList.innerHTML = ''
-  data.forEach(f => {
+  files.forEach(f => {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => download(f.name, filePath))
+    li.addEventListener('click', () => download(f.name, session.user.id))
     fileList.appendChild(li)
   })
 }
 
-// 4️⃣ Upload file
+// Upload file
 document.getElementById('uploadBtn').addEventListener('click', async () => {
+  const file = fileInput.files[0]
   if (!file) return alert('Select a file first.')
 
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) return alert('Not logged in.')
 
+  const filePath = `user_${session.user.id}/${file.name}`
   const { error } = await supabase.storage
-    .from('secure')
-    .upload(filePath, file, {
-      metadata: { user_id: session.user.id }
-    })
+    .from('secure') // <-- bucket name replaced
+    .upload(filePath, file, { metadata: { user_id: session.user.id } })
 
   if (error) alert('Upload failed: ' + error.message)
   else {
@@ -85,25 +86,20 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
   }
 })
 
-// 5️⃣ Download file
-async function downloadFile(fileName) {
+// Download file
+async function downloadFile(fileName, userId) {
   const { data, error } = await supabase.storage
-    .from('secure')
-    .download(file.name, filePath)
+    .from('secure') // <-- bucket name replaced
+    .download(`user_${userId}/${fileName}`)
 
-  if (error) return alert(error.message)
-  const text = await data.text()
-  console.log('File content:', text)
+  if (error) return alert('Download failed: ' + error.message)
 
   const url = URL.createObjectURL(data)
   const a = document.createElement('a')
   a.href = url
-  a.download = files.name
+  a.download = fileName
   document.body.appendChild(a)
   a.click()
   a.remove()
   URL.revokeObjectURL(url)
 }
-
-// 6️⃣ Auto-load files on page load
-loadUserFiles()
