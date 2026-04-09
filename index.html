@@ -362,6 +362,50 @@
       }
     }
 
+
+
+
+
+
+
+    // THEORETICAL FUNCTION
+/*
+     async function loadFile() {
+      fileContent.textContent = 'Loading file...';
+
+      const { data, error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .download(FILE_PATH);
+
+      if (error) {
+        console.error(error);
+        fileContent.textContent = 'Error loading file: ' + error.message;
+        return;
+      }
+
+      const text = await data.text();
+      fileContent.textContent = text;
+    }
+
+    loginBtn.addEventListener('click', sendMagicLink);
+    logoutBtn.addEventListener('click', logout);
+    loadFileBtn.addEventListener('click', loadFile);
+
+    // Detect login changes
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, session);
+      await updateUI();
+    });
+
+    // Initial UI state
+    await updateUI();
+*/
+
+
+
+
+    
+
     // LOAD FILES
     window.loadFiles = async function () {
       fileList.innerHTML = '<div class="empty-state">Loading files...</div>'
@@ -400,7 +444,7 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .getSignedUrl(file.name)
+            .createSignedUrl(file.name)
 
           if (data?.publicUrl) {
             window.open(data.signedUrl, '_blank')
