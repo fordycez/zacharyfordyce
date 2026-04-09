@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zachary Fordyce</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Supabase File Manager</h1>
+  <br/>
+  <!-- Login Form -->
+  <div id="loginDiv">
+    <input type="email" id="email" placeholder="Enter your email" />
+    <button onclick="login()">Send Magic Link</button>
+    <p id="loginMsg"></p>
+  </div>
+
+  <!-- Logged-in user section -->
+  <div id="userDiv" style="display:none;">
+    <p>Welcome, <span id="userEmail"></span>! <button onclick="logout()">Logout</button></p>
+    
+    <!-- File Upload -->
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">Upload File</button>
+
+    <h3>Your Files:</h3>
+    <ul id="fileList"></ul>
+  </div>
+    <script type="module" src="app.js"></script>
+  </div>
+</body>
+</html>
