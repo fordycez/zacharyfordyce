@@ -13,86 +13,154 @@ const status = document.getElementById('status')
 const fileSection = document.getElementById('fileSection')
 const fileInput = document.getElementById('fileInput')
 const fileList = document.getElementById('fileList')
+const uploadBtn = document.getElementById('uploadBtn')
 
-// Login with email + password
+// --------------------
+// LOGIN
+// --------------------
 loginBtn.addEventListener('click', async () => {
   const email = emailInput.value.trim()
-  const password = passwordInput.value
+  const password = passwordInput.value.trim()
 
   if (!email || !password) {
     status.textContent = 'Enter both email and password.'
     return
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
 
   if (error) {
     status.textContent = 'Login failed: ' + error.message
-  } else {
-    status.textContent = `Logged in as ${data.user.email}`
-    logoutBtn.style.display = 'inline-block'
-    fileSection.style.display = 'block'
-    loadUserFiles()
+    return
   }
+
+  status.textContent = `Logged in as ${data.user.email}`
+  logoutBtn.style.display = 'inline-block'
+  fileSection.style.display = 'block'
+
+  await loadUserFiles()
 })
 
-// Logout
+// --------------------
+// LOGOUT
+// --------------------
 logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut()
   location.reload()
 })
 
-// Load user files
+// --------------------
+// AUTO-LOAD SESSION ON PAGE LOAD
+// --------------------
+window.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    status.textContent = 'Not logged in.'
+    fileSection.style.display = 'none'
+    logoutBtn.style.display = 'none'
+    return
+  }
+
+  status.textContent = `Logged in as ${session.user.email}`
+  logoutBtn.style.display = 'inline-block'
+  fileSection.style.display = 'block'
+
+  await loadUserFiles()
+})
+
+// --------------------
+// LOAD USER FILES
+// --------------------
 async function loadUserFiles() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) return
 
+  const userId = session.user.id
+
   const { data: files, error } = await supabase.storage
-    .from('secure') // <-- bucket name replaced
-    .list(`user_${session.user.id}`)
+    .from('secure')
+    .list(`user_${userId}`)
 
   if (error) {
-    fileList.innerHTML = 'Error loading files: ' + error.message
+    fileList.innerHTML = `<li>Error loading files: ${error.message}</li>`
     return
   }
-  const userId = session.user.id
+
   fileList.innerHTML = ''
+
+  if (!files || files.length === 0) {
+    fileList.innerHTML = '<li>No files uploaded yet.</li>'
+    return
+  }
+
   files.forEach(f => {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => downloadFile(f.name, userId))
+
+    li.addEventListener('click', () => {
+      downloadFile(f.name, userId)
+    })
+
     fileList.appendChild(li)
   })
 }
 
-// Upload file
-document.getElementById('uploadBtn').addEventListener('click', async () => {
+// --------------------
+// UPLOAD FILE
+// --------------------
+uploadBtn.addEventListener('click', async () => {
   const file = fileInput.files[0]
-  if (!file) return alert('Select a file first.')
+
+  if (!file) {
+    alert('Select a file first.')
+    return
+  }
 
   const { data: { session } } = await supabase.auth.getSession()
-  if (!session) return alert('Not logged in.')
-
-  const filePath = `user_${session.user.id}/${file.name}`
-  const { error } = await supabase.storage
-    .from('secure') // <-- bucket name replaced
-    .upload(filePath, file, { metadata: { user_id: session.user.id } })
-
-  if (error) alert('Upload failed: ' + error.message)
-  else {
-    alert('File uploaded!')
-    loadUserFiles()
+  if (!session) {
+    alert('Not logged in.')
+    return
   }
+
+  const userId = session.user.id
+  const filePath = `user_${userId}/${file.name}`
+
+  const { error } = await supabase.storage
+    .from('secure')
+    .upload(filePath, file, {
+      upsert: true,
+      metadata: {
+        user_id: userId
+      }
+    })
+
+  if (error) {
+    alert('Upload failed: ' + error.message)
+    return
+  }
+
+  alert('File uploaded successfully!')
+  fileInput.value = ''
+  await loadUserFiles()
 })
 
-// Download file
+// --------------------
+// DOWNLOAD FILE
+// --------------------
 async function downloadFile(fileName, userId) {
   const { data, error } = await supabase.storage
-    .from('secure') // <-- bucket name replaced
+    .from('secure')
     .download(`user_${userId}/${fileName}`)
 
-  if (error) return alert('Download failed: ' + error.message)
+  if (error) {
+    alert('Download failed: ' + error.message)
+    return
+  }
 
   const url = URL.createObjectURL(data)
   const a = document.createElement('a')
