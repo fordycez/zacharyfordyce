@@ -442,9 +442,9 @@
         downloadBtn.textContent = 'Download'
 
         downloadBtn.onclick = async () => {
-          const { data } = supabase.storage
+          const { data } = await supabase.storage
             .from(bucketName)
-            .createSignedUrl(`${user.id}/job.txt`, 86400)
+            .createSignedUrl(`job.txt`, 86400)
 
           if (data?.signedUrl) {
             window.open(data.signedUrl, '_blank')
