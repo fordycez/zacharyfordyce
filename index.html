@@ -369,7 +369,7 @@
 
       const { data, error } = await supabase.storage
         .from(bucketName)
-        .list('', {
+        .list('info/', {
           limit: 100,
           offset: 0
         })
