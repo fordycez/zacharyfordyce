@@ -298,6 +298,7 @@
     const supabaseAnonKey = 'sb_publishable_Qt55GDu7leyPXVGRl6S4Ng_NweDMbl4'
     const bucketName = 'secure'
     const folderPath = 'info';
+    //const fullPath = folderPath ? `${folderPath}/${file.name}` : file.name
     const fullPath = folderPath ? `${folderPath}/${file.name}` : file.name
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -370,7 +371,7 @@
 
       const { data, error } = await supabase.storage
         .from(bucketName)
-        .list(fullPath, {
+        .list(folderPath, {
           limit: 100,
           offset: 0
         })
