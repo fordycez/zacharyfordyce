@@ -297,9 +297,6 @@
     const supabaseUrl = 'https://bxvaiaxgdhmqewrgltmo.supabase.co'
     const supabaseAnonKey = 'sb_publishable_Qt55GDu7leyPXVGRl6S4Ng_NweDMbl4'
     const bucketName = 'secure'
-    const folderPath = 'info';
-    //const fullPath = folderPath ? `${folderPath}/${file.name}` : file.name
-    const fullPath = folderPath ? `${folderPath}/${file.name}` : file.name
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -371,7 +368,7 @@
 
       const { data, error } = await supabase.storage
         .from(bucketName)
-        .list(folderPath, {
+        .list('', {
           limit: 100,
           offset: 0
         })
@@ -403,12 +400,10 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .createSignedUrl(file.name, 60)
-          
-
+            .getPublicUrl(file.name)
 
           if (data?.publicUrl) {
-            window.open(data.signedUrl, '_blank')
+            window.open(data.publicUrl, '_blank')
           } else {
             alert('Could not generate file URL.')
           }
