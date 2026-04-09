@@ -1,36 +1,187 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Zachary Fordyce</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supabase Magic Link File Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 6px 0;
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+
+    #status {
+      margin: 15px 0;
+      font-weight: bold;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-<div style="width: 100%; height: 100%">
-<h1>Zachary Fordyce's Portfolio</h1>\
-<br/>
-<body>
-  <h1>Supabase File Access Demo</h1>
+  <h1>Supabase File Viewer</h1>
 
-  <!-- Login -->
-  <input id="emailInput" type="email" placeholder="Your email">
-  <button id="loginBtn">Login / Sign Up</button>
-  <button id="logoutBtn" style="display:none;">Logout</button>
-  <p id="status"></p>
-
-  <hr>
-
-  <!-- File Section -->
-  <div id="fileSection" style="display:none;">
-    <input type="file" id="fileInput">
-    <button id="uploadBtn">Upload File</button>
-
-    <h3>Your Files</h3>
-    <ul id="fileList"></ul>
+  <div id="authSection">
+    <input type="email" id="email" placeholder="Enter your email" />
+    <button id="loginBtn">Send Magic Link</button>
+    <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
   </div>
 
-  <script type="module" src="app1.js"></script>
-</body>
-</div>
+  <div id="status">Checking login...</div>
+
+  <h2>File Contents</h2>
+  <button id="loadFileBtn" class="hidden">Load File</button>
+  <pre id="fileContent">Nothing loaded yet.</pre>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // =========================
+    // REPLACE THESE
+    // =========================
+    const supabaseUrl = 'https://bxvaiaxgdhmqewrgltmo.supabase.co';
+    const supabaseAnonKey = 'sb_publishable_Qt55GDu7leyPXVGRl6S4Ng_NweDMbl4';
+
+    // Your bucket + file path
+    const BUCKET_NAME = 'secure';
+    const FILE_PATH = 'info/job.txt';
+    // =========================
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const emailInput = document.getElementById('email');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const statusDiv = document.getElementById('status');
+    const loadFileBtn = document.getElementById('loadFileBtn');
+    const fileContent = document.getElementById('fileContent');
+
+    async function updateUI() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        statusDiv.textContent = `Logged in as ${session.user.email}`;
+        loginBtn.classList.add('hidden');
+        emailInput.classList.add('hidden');
+        logoutBtn.classList.remove('hidden');
+        loadFileBtn.classList.remove('hidden');
+      } else {
+        statusDiv.textContent = 'Not logged in';
+        loginBtn.classList.remove('hidden');
+        emailInput.classList.remove('hidden');
+        logoutBtn.classList.add('hidden');
+        loadFileBtn.classList.add('hidden');
+        fileContent.textContent = 'Nothing loaded yet.';
+      }
+    }
+
+    async function sendMagicLink() {
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        alert('Please enter your email.');
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin + window.location.pathname
+        }
+      });
+
+      if (error) {
+        console.error(error);
+        alert('Error sending magic link: ' + error.message);
+      } else {
+        alert('Magic link sent! Check your email.');
+      }
+    }
+
+    /*async function logout() {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error(error);
+        alert('Logout failed: ' + error.message);
+      } else {
+        await updateUI();
+      }
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      fileList.innerHTML = '';
+      fileContent.textContent = 'Nothing loaded yet.';
+      window.location.reload();
+      await updateUI();
+    }
+    */
+    
+    
+    //hotfix
+  window.logout = async function () {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      console.error('Logout error:', error.message)
+      alert('Logout failed: ' + error.message)
+      return
+    }
+
+    location.reload()
+  }
+    
+    
+    
+
+    async function loadFile() {
+      fileContent.textContent = 'Loading file...';
+
+      const { data, error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .download(FILE_PATH);
+
+      if (error) {
+        console.error(error);
+        fileContent.textContent = 'Error loading file: ' + error.message;
+        return;
+      }
+
+      const text = await data.text();
+      fileContent.textContent = text;
+    }
+
+    loginBtn.addEventListener('click', sendMagicLink);
+    logoutBtn.addEventListener('click', logout);
+    loadFileBtn.addEventListener('click', loadFile);
+
+    // Detect login changes
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, session);
+      await updateUI();
+    });
+
+    // Initial UI state
+    await updateUI();
+  </script>
 </body>
 </html>
