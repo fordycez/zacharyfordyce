@@ -127,6 +127,11 @@
       } else {
         await updateUI();
       }
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      fileList.innerHTML = '';
+      fileContent.textContent = 'Nothing loaded yet.';
+      await updateUI();
     }
 
     async function loadFile() {
