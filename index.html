@@ -402,7 +402,7 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .getPublicUrl(fullPath)
+            .createSignedUrl(fullPath, 60)
           
 
 
