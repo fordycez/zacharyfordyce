@@ -66,13 +66,13 @@
       }
       
       // Logout
-      async function logout() {
+     window.logout() = async function {
         await supabase.auth.signOut()
         showLogin()
       }
       
       // Upload a file
-      async function uploadFile() {
+        window.unploadFile() = async function {
         const fileInput = document.getElementById('fileInput')
         if (!fileInput.files.length) return alert('Select a file first!')
       
@@ -130,6 +130,12 @@
           li.innerHTML = `<a href="${signedData.signedUrl}" target="_blank">${file.file_name}</a>`
           fileList.appendChild(li)
         }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+          await supabase.auth.signOut()
+          showLogin()
+        })
+        document.getElementById('uploadBtn').addEventListener('click', uploadFile)
       }
     </script>
   </div>
