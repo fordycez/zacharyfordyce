@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Zachary Fordyce</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="styles.css">
+  <title>Zachary Fordyce</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div style="width: 100%; height: 100%">
-  <h1>Supabase Login</h1>
-  <br/>
+  <div style="width: 100%; height: 100%">
+    <h1>Supabase Login</h1>
+    <br/>
 
-  <!-- Login -->
-  <input id="emailInput" type="email" placeholder="Email">
-  <input id="passwordInput" type="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
-  <button id="logoutBtn" style="display:none;">Logout</button>
-  <p id="status"></p>
+    <!-- Login -->
+    <input id="emailInput" type="email" placeholder="Email">
+    <input id="passwordInput" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+    <p id="status"></p>
 
-  <hr>
+    <hr>
 
-  <!-- File Section -->
-  <div id="fileSection" style="display:none;">
-    <input type="file" id="fileInput">
-    <button id="uploadBtn">Upload File</button>
+    <!-- File Section -->
+    <div id="fileSection" style="display:none;">
+      <input type="file" id="fileInput">
+      <button id="uploadBtn">Upload File</button>
 
-    <h3>Your Files</h3>
-    <ul id="fileList"></ul>
-    <input type="file" id="fileList">
+      <h3>Your Files</h3>
+      <ul id="fileList"></ul>
+    </div>
+
+    <script type="module" src="app.js"></script>
   </div>
-
-  <script type="module" src="app.js"></script>
-</body>
-</div>
 </body>
 </html>
