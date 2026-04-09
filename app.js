@@ -75,7 +75,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // --------------------
 // LOAD USER FILES
 // --------------------
-/*async function loadUserFiles() {
+async function loadUserFiles() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) return
 
@@ -84,31 +84,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const { data: files, error } = await supabase.storage
     .from('secure')
     .list(`user_${userId}`)
-
-  if (error) {
-    fileList.innerHTML = `<li>Error loading files: ${error.message}</li>`
-    return
-  }
-
-  fileList.innerHTML = ''
-
-  if (!files || files.length === 0) {
-    fileList.innerHTML = '<li>No files uploaded yet.</li>'
-    return
-  }
-
-  files.forEach(f => {
-    const li = document.createElement('li')
-    li.textContent = f.name
-    li.style.cursor = 'pointer'
-
-    li.addEventListener('click', () => {
-      downloadFile(f.name, userId)
-    })
-
-    fileList.appendChild(li)
-  })
-}*/
+}
 
 async function listFiles() {
   const { data, error } = await supabase
