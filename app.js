@@ -113,7 +113,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 async function listFiles() {
   const { data, error } = await supabase
     .storage
-    .from('your-bucket-name')
+    .from('secure')
     .list('', {
       limit: 100,
       offset: 0,
