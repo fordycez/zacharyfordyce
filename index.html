@@ -400,14 +400,14 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .getSignedUrl(file.name)
+            .download(file.name)
 
-          if (data?.publicUrl) {
+          /*if (data?.publicUrl) {
             window.open(data.signedUrl, '_blank')
           } else {
             alert('Could not generate file URL.')
           }
-        }
+        }*/
 
         fileRow.appendChild(fileName)
         fileRow.appendChild(downloadBtn)
