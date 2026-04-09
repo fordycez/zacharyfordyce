@@ -89,7 +89,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 async function downloadFile(fileName) {
   const { data, error } = await supabase.storage
     .from('secure')
-    .download(file.name, filePath))
+    .download(file.name, filePath)
 
   if (error) return alert(error.message)
   const text = await data.text()
