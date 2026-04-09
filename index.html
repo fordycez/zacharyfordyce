@@ -298,6 +298,7 @@
     const supabaseAnonKey = 'sb_publishable_Qt55GDu7leyPXVGRl6S4Ng_NweDMbl4'
     const bucketName = 'secure'
     const folderPath = 'info';
+    const fullPath = folderPath ? `${folderPath}/${file.name}` : file.name
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -401,7 +402,9 @@
         downloadBtn.onclick = async () => {
           const { data } = supabase.storage
             .from(bucketName)
-            .getPublicUrl(file.name)
+            .getPublicUrl(fullPath)
+          
+
 
           if (data?.publicUrl) {
             window.open(data.publicUrl, '_blank')
