@@ -370,7 +370,7 @@
 
       const { data, error } = await supabase.storage
         .from(bucketName)
-        .list(folderPath, {
+        .list(fullPath, {
           limit: 100,
           offset: 0
         })
