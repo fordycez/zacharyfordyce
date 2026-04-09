@@ -44,7 +44,7 @@
   <div id="authSection">
     <input type="email" id="email" placeholder="Enter your email" />
     <button id="loginBtn">Send Magic Link</button>
-    <button id="logoutBtn" class="hidden">Logout</button>
+    <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
   </div>
 
   <div id="status">Checking login...</div>
@@ -118,7 +118,7 @@
       }
     }
 
-    async function logout() {
+    /*async function logout() {
       const { error } = await supabase.auth.signOut();
 
       if (error) {
@@ -134,6 +134,24 @@
       window.location.reload();
       await updateUI();
     }
+    */
+    
+    
+    //hotfix
+  window.logout = async function () {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      console.error('Logout error:', error.message)
+      alert('Logout failed: ' + error.message)
+      return
+    }
+
+    location.reload()
+  }
+    
+    
+    
 
     async function loadFile() {
       fileContent.textContent = 'Loading file...';
