@@ -446,7 +446,7 @@
             .from(bucketName)
             .createSignedUrl(file.name)
 
-          if (data?.publicUrl) {
+          if (data?.signedUrl) {
             window.open(data.signedUrl, '_blank')
           } else {
             alert('Could not generate file URL.')
