@@ -75,7 +75,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // --------------------
 // LOAD USER FILES
 // --------------------
-async function loadUserFiles() {
+/*async function loadUserFiles() {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) return
 
@@ -108,7 +108,36 @@ async function loadUserFiles() {
 
     fileList.appendChild(li)
   })
+}*/
+
+async function listFiles() {
+  const { data, error } = await supabase
+    .storage
+    .from('your-bucket-name')
+    .list('', {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: 'name', order: 'asc' }
+    })
+
+  if (error) {
+    console.error('List error:', error)
+    document.getElementById('fileList').innerHTML =
+      `<li>Error: ${error.message}</li>`
+    return
+  }
+
+  const fileList = document.getElementById('fileList')
+  fileList.innerHTML = ''
+
+  data.forEach(file => {
+    const li = document.createElement('li')
+    li.textContent = file.name
+    fileList.appendChild(li)
+  })
 }
+
+listFiles()
 
 // --------------------
 // UPLOAD FILE
