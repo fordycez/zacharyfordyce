@@ -13,8 +13,9 @@ const fileSection = document.getElementById('fileSection')
 const fileInput = document.getElementById('fileInput')
 const fileList = document.getElementById('fileList')
 
-const file = fileInput.files[0]; // the local file the user selected
-const filePath = `user_${session.user.id}/${file.name}`;
+const file = fileInput.file[0]; // the local file the user selected
+// const filePath = `user_${session.user.id}/${files.name}`;
+const filePath = 'user_${session.user.id}';
 
 // 1️⃣ Login via magic link
 loginBtn.addEventListener('click', async () => {
@@ -50,11 +51,6 @@ async function loadUserFiles() {
   logoutBtn.style.display = 'inline-block'
   fileSection.style.display = 'block'
 
-  // List files for this user
-  const { data: files, error } = await supabase.storage
-    .from('secure')
-    .list(`user_${session.user.id}/${file.name}`) // folder must match upload path
-
   //user_${session.user.id}/${fileName} - Something about this makes me wonder
 
   if (error) return (fileList.innerHTML = 'Error loading files: ' + error.message)
@@ -64,14 +60,13 @@ async function loadUserFiles() {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => downloadFile(f.name, session.user.id))
+    li.addEventListener('click', () => download(f.name, filePath))
     fileList.appendChild(li)
   })
 }
 
 // 4️⃣ Upload file
 document.getElementById('uploadBtn').addEventListener('click', async () => {
-  const file = fileInput.files[0]
   if (!file) return alert('Select a file first.')
 
   const { data: { session } } = await supabase.auth.getSession()
@@ -79,7 +74,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 
   const { error } = await supabase.storage
     .from('secure')
-    .upload(`user_${session.user.id}/${file.name}`, file, {
+    .upload(filePath, file, {
       metadata: { user_id: session.user.id }
     })
 
@@ -94,7 +89,7 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
 async function downloadFile(fileName) {
   const { data, error } = await supabase.storage
     .from('secure')
-    .download(`user_${session.user.id}/${fileName}`)
+    .download(file.name, filePath))
 
   if (error) return alert(error.message)
   const text = await data.text()
@@ -103,7 +98,7 @@ async function downloadFile(fileName) {
   const url = URL.createObjectURL(data)
   const a = document.createElement('a')
   a.href = url
-  a.download = fileName
+  a.download = files.name
   document.body.appendChild(a)
   a.click()
   a.remove()
