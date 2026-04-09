@@ -55,13 +55,13 @@ async function loadUserFiles() {
     fileList.innerHTML = 'Error loading files: ' + error.message
     return
   }
-
+  const userId = session.user.id
   fileList.innerHTML = ''
   files.forEach(f => {
     const li = document.createElement('li')
     li.textContent = f.name
     li.style.cursor = 'pointer'
-    li.addEventListener('click', () => downloadFile(f.name, session.user.id))
+    li.addEventListener('click', () => downloadFile(f.name, userId))
     fileList.appendChild(li)
   })
 }
